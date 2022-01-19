@@ -22,70 +22,73 @@ public class AnimationManager : MonoBehaviour
         SubscribeToEvents();
     }
 
-    private void Start()
-    {
-        InitializeAnimatorParameters();
-    }
-
     #endregion // Singleton
 
     #region Variables
 
-    private List<string> _animatorParameters = new List<string>();
+    private readonly float _animationBlendSpeed = 0.1f;
+    private float _targetVertical, _targetHorizontal;
+    private float _currentVertical, _currentHorizontal;
 
     [SerializeField]
     private GameObject _stackDestroyParticleSystemObject, _stackTransportParticleSystemObject, _goldCollectParticleSystemObject;
 
     #endregion // Variables
 
+    #region Updates
+
+    private void FixedUpdate()
+    {
+        SetBlendTreeParameters();
+        SetAnimation();
+    }
+
+    #endregion // Updates
+
     #region Methods
+
+    private void SetAnimation()
+    {
+        GameManager.Instance.CharacterAnimator.SetFloat("VerticalForce", _currentVertical);
+        GameManager.Instance.CharacterAnimator.SetFloat("HorizontalForce", _currentHorizontal);
+    }
+
+    private void SetBlendTreeParameters()
+    {
+        _currentVertical = Mathf.Lerp(_currentVertical, _targetVertical, _animationBlendSpeed);
+        _currentHorizontal = Mathf.Lerp(_currentHorizontal, _targetHorizontal, _animationBlendSpeed);
+    }
 
     #region Activate Animation
 
-    public void ActivateAnimation_Run1()
-    {
-        SetAllAnimatorParametersFalse();
-        GameManager.Instance.CharacterAnimator.SetBool("Run1", true);
-    }
-    public void ActivateAnimation_Run2()
-    {
-        SetAllAnimatorParametersFalse();
-        GameManager.Instance.CharacterAnimator.SetBool("Run2", true);
-    }
-    public void ActivateAnimation_Dance()
-    {
-        SetAllAnimatorParametersFalse();
-        GameManager.Instance.CharacterAnimator.SetBool("Dance", true);
-    }
     public void ActivateAnimation_Idle()
     {
-        SetAllAnimatorParametersFalse();
-        GameManager.Instance.CharacterAnimator.SetBool("Idle", true);
+        _targetVertical = 0f;
+    }
+
+    public void ActivateAnimation_Run1()
+    {
+        _targetVertical = 0.5f;
+    }
+
+    public void ActivateAnimation_Run2()
+    {
+        _targetVertical = 1f;
     }
 
     private void ActivateAnimation_PushBackCharacter()
     {
-        SetAllAnimatorParametersFalse();
-        GameManager.Instance.CharacterAnimator.SetBool("PushBack", true);
+        _targetVertical = -1f;
     }
+
+    public void ActivateAnimation_Dance()
+    {
+        _targetHorizontal = 1f;
+        _targetVertical = 0f;
+    }
+
 
     #endregion // Activate Animation
-
-    #region Animator
-    public void InitializeAnimatorParameters()
-    {
-        foreach (AnimatorControllerParameter parameter in GameManager.Instance.CharacterAnimator.parameters)
-        {
-            _animatorParameters.Add(parameter.name);
-        }
-    }
-
-    private void SetAllAnimatorParametersFalse()
-    {
-        foreach (string parameter in _animatorParameters)
-            GameManager.Instance.CharacterAnimator.SetBool(parameter, false);
-    }
-    #endregion // Animator
 
     #region Activate Particles
 

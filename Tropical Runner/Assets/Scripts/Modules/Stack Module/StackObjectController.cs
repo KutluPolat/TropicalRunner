@@ -8,7 +8,7 @@ public class StackObjectController : MonoBehaviour
 
     #region Variables
 
-    private bool _isConnectedToPlayer, _isAtCheckstand;
+    private bool _isAtCheckstand;
     private GameObject _connectedNode;
 
     [SerializeField]
@@ -46,7 +46,6 @@ public class StackObjectController : MonoBehaviour
             SetStackStateTo(StackableState.NotCollected);
         }
 
-        _isConnectedToPlayer = false;
         _connectedNode = null;
 
         GameManager.Instance.Stackbar.RefreshStackbar();
@@ -86,7 +85,6 @@ public class StackObjectController : MonoBehaviour
         GetInToStackList();
         GameManager.Instance.UIController.UpdateStackCounterText();
 
-        _isConnectedToPlayer = true;
         SetStackStateTo(StackableState.Collected);
 
         _connectedNode = GameManager.Instance.CharacterTransform.gameObject;
